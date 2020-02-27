@@ -133,7 +133,13 @@ spec:
       - -c
       - |
 
-        OUTPUTS_RESOURCE_DOCKER_IMAGE_URL_LOWERCASE=$( echo $( /workspace/imageurl_imagename_lowercase.sh ) )
+        OUTPUTS_RESOURCE_DOCKER_IMAGE_URL_LOWERCASE=$( ./imageurl_imagename_lowercase.sh $(outputs.resources.docker-image.url) jenkins )
+        retVal=$?
+        if [ $retVal -ne 0 ]
+        then
+           echo "The script failed(/workspace/$gitsource/imageurl_imagename_lowercase.sh) Reason: $OUTPUTS_RESOURCE_DOCKER_IMAGE_URL_LOWERCASE" >&2
+           exit $retVal
+        fi        
         echo "OUTPUTS_RESOURCE_DOCKER_IMAGE_URL_LOWERCASE=$OUTPUTS_RESOURCE_DOCKER_IMAGE_URL_LOWERCASE"
   
         buildah push --tls-verify=false "$OUTPUTS_RESOURCE_DOCKER_IMAGE_URL_LOWERCASE" "docker://$OUTPUTS_RESOURCE_DOCKER_IMAGE_URL_LOWERCASE"
